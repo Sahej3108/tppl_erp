@@ -1366,7 +1366,8 @@ async function loadAll(){
     'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
   // Step 2: Load remaining sheets in background (non-blocking)
-  loadLeads().then(()=>{ loadScot(); loadFMS(); });
+  loadLeads().then(()=>{ loadScot(); });
+  loadFMS();
   loadStock();
   loadPendingOrders();
 }
@@ -1913,8 +1914,8 @@ const FMS_STEPS = [
 ];
 
 async function loadFMS(){
-  // Reuse cached leads data
-  const t = cache['leads'] || await fetchSheet('leads');
+  // Fetch leads data fresh (independent of loadLeads)
+  const t = await fetchSheet('leads');
   const loading = document.getElementById('fms-loading');
   const wrap    = document.getElementById('fms-table');
   if(!t||!t.rows){
