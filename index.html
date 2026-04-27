@@ -1352,16 +1352,22 @@ function tryLoad(id){
 //  LOAD ALL DATA
 // ══════════════════════════════════════════════════
 async function loadAll(){
-  await Promise.all([loadSales(),loadDispatch(),loadLeads(),loadStock()]);
-  await loadScot();
-  await loadPendingOrders();
-  // Final render pass after everything is loaded
+  // Step 1: Load sales + dispatch first — these power the dashboard
+  await Promise.all([loadSales(), loadDispatch()]);
+
+  // Build dashboard immediately with real data
+  buildDashboard();
   renderDispatchDashboard();
   if(soAllRows.length) renderSalesWorkflow();
-  await loadFMS();
-  buildDashboard();
-  document.getElementById('data-time').textContent=
-    'Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  // Mark as updated
+  document.getElementById('data-time').textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  // Step 2: Load remaining sheets in background (non-blocking)
+  loadLeads().then(()=>{ loadScot(); });
+  loadStock();
+  loadPendingOrders();
 }
 
 // ── SALES ────────────────────────────────────────
@@ -1549,9 +1555,7 @@ async function loadDispatch(){
     </tr>`;
   }).join('');
 
-  // Dispatch data is ready — render the dispatch dashboard immediately
-  renderDispatchDashboard();
-  if(soAllRows.length) renderSalesWorkflow();
+  // Dispatch data loaded
 }
 
 // ── LEADS ────────────────────────────────────────
