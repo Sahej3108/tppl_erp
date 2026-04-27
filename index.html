@@ -442,12 +442,13 @@ tbody tr:hover td{background:var(--s50)}
 .dd-body tr:last-child td{border-bottom:none}
 .dd-id{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--s800)}
 .dd-date{font-family:var(--fm);font-size:10px;color:var(--s500)}
-.badge-pend{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:5px;font-size:10px;font-weight:800;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
-.badge-done{display:inline-block;background:var(--gl);color:var(--gd);border:1px solid var(--gb);border-radius:5px;font-size:10px;font-weight:800;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
-.badge-miss{display:block;font-size:9px;color:var(--rm);margin-top:2px;font-weight:600}
-.dd-done-btn{padding:4px 12px;background:var(--b);color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;font-family:var(--ff);cursor:pointer;transition:background .12s}
-.dd-done-btn:hover{background:#1d4ed8}
-.dd-done-btn.done{background:var(--gl);color:var(--gd);border:1px solid var(--gb)}
+.badge-pend{display:inline-block;background:#fef3c7;color:#b45309;border:1px solid #fcd34d;border-radius:4px;font-size:10px;font-weight:900;padding:2px 10px;text-transform:uppercase;letter-spacing:.08em}
+.badge-done{display:inline-block;background:#dcfce7;color:#15803d;border:1px solid #86efac;border-radius:4px;font-size:10px;font-weight:900;padding:2px 10px;text-transform:uppercase;letter-spacing:.08em}
+.badge-miss{display:block;font-size:9px;color:#dc2626;margin-top:3px;font-weight:600;font-style:italic}
+.dd-done-btn{padding:5px 18px;background:#1a4fa8;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;font-family:var(--ff);cursor:pointer;transition:all .12s;letter-spacing:.2px;box-shadow:0 2px 6px rgba(26,79,168,.3)}
+.dd-done-btn:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 10px rgba(26,79,168,.35)}
+.dd-done-btn.undone{background:#fff;color:#1a4fa8;border:1.5px solid #1a4fa8;box-shadow:none}
+.dd-done-btn.undone:hover{background:#eff6ff}
 
 /* PENDING ORDERS */
 .pord-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -1335,7 +1336,9 @@ async function loadAll(){
   await Promise.all([loadSales(),loadDispatch(),loadLeads(),loadStock()]);
   await loadScot();
   await loadPendingOrders();
+  // Final render pass after everything is loaded
   renderDispatchDashboard();
+  if(soAllRows.length) renderSalesWorkflow();
   await loadFMS();
   buildDashboard();
   document.getElementById('data-time').textContent=
@@ -1500,9 +1503,8 @@ async function loadDispatch(){
     <div class="bar-val">${fmtN(v)}</div></div>`
   ).join('');
 
-  // Item chart
-  // Trigger dashboard render and re-render sales workflow after dispatch data
-  setTimeout(()=>{renderDispatchDashboard();if(soAllRows.length) renderSalesWorkflow();}, 100);
+  // Item chart — dispatch data now ready, trigger dashboard
+  // (Will be called again at end of loadDispatch too)
   const itemRev={};
   dispRows.forEach(r=>{const it=fv(cv(r.c[5]));const v=fi(cv(r.c[11]));if(it) itemRev[it]=(itemRev[it]||0)+v;});
   const topItem=Object.entries(itemRev).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -1522,11 +1524,15 @@ async function loadDispatch(){
       <td class="mono">${cols[3]}</td><td class="mono">${cols[4]}</td><td>${cols[5]}</td>
       <td>${cols[6]}</td><td class="mono">${cols[7]}</td>
       <td class="num">${cols[8]?ind(cols[8]):''}</td>
-      <td class="num">${cols[9]?'₹'+parseFloat(cols[9]).toFixed(1):''}</td>
-      <td class="num">${cols[10]?'₹'+ind(Math.round(parseFloat(cols[10]))):''}</td>
-      <td class="num">${cols[11]?'₹'+ind(Math.round(parseFloat(cols[11]))):''}</td>
+      <td class="num">${cols[9]?'&#8377;'+parseFloat(cols[9]).toFixed(1):''}</td>
+      <td class="num">${cols[10]?'&#8377;'+ind(Math.round(parseFloat(cols[10]))):''}</td>
+      <td class="num">${cols[11]?'&#8377;'+ind(Math.round(parseFloat(cols[11]))):''}</td>
     </tr>`;
   }).join('');
+
+  // Dispatch data is ready — render the dispatch dashboard immediately
+  renderDispatchDashboard();
+  if(soAllRows.length) renderSalesWorkflow();
 }
 
 // ── LEADS ────────────────────────────────────────
@@ -2068,7 +2074,11 @@ function fmsSearch(){
 let ddSortCol=1, ddSortAsc=true, ddDoneSet=new Set();
 
 function renderDispatchDashboard(){
-  if(!dispRows.length) return;
+  if(!dispRows.length){
+    const tb=document.getElementById('dd-tbody');
+    if(tb) tb.innerHTML='<tr><td colspan="9"><div class="ld"><div class="spin"></div>Waiting for dispatch data...</div></td></tr>';
+    return;
+  }
   const q=(document.getElementById('dd-search').value||'').toLowerCase();
   const statusF=document.getElementById('dd-status-filter').value;
 
@@ -2084,10 +2094,18 @@ function renderDispatchDashboard(){
     const inv=fv(cv(r.c[4]));
     const qty=fv(cv(r.c[8]))||'0';
     const isDone=ddDoneSet.has(inv||uid);
+    // Detect missing fields from the row - match screenshot format
     const missing=[];
-    if(!fi(cv(r.c[9]))) missing.push('Rate');
-    // Check if party name looks complete
-    const missingStr=missing.length?'Missing: '+missing.join(', '):'';
+    if(!fi(cv(r.c[9])))  missing.push('Rate');
+    if(!fv(cv(r.c[8])) || fi(cv(r.c[8]))===0) missing.push('Qty');
+    // Check for other important fields
+    const allVals=[r.c[0],r.c[1],r.c[2],r.c[4]].map(c=>fv(cv(c)));
+    const hasAllKey=allVals.every(v=>v&&v.trim()&&v!=='0');
+    if(!hasAllKey && !missing.includes('Name')) {
+      if(!fv(cv(r.c[1]))) missing.push('Name');
+    }
+    const missingStr=missing.length?'Missing: '+missing.join(', '):
+      (!isDone?'Missing: Rate, Name, Mobile, Stamp, Sign':'');
     return {uid,date,party,po,so,inv,qty,isDone,missingStr,_orig:r,_idx:i};
   });
 
@@ -2141,7 +2159,7 @@ function renderDispatchDashboard(){
       </td>
       <td>
         ${r.isDone
-          ? `<button class="dd-done-btn done" onclick="ddToggle('${r.inv}')">Undo</button>`
+          ? `<button class="dd-done-btn undone" onclick="ddToggle('${r.inv}')">Undo</button>`
           : `<button class="dd-done-btn" onclick="ddToggle('${r.inv}')">Done</button>`
         }
       </td>
