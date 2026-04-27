@@ -974,88 +974,31 @@ tbody tr:hover td{background:var(--s50)}
   </div>
 </div>
 
-<! ══════════ SALES FMS LIVE ══════════ >
-<div class="pg" id="pg-sales-fms">
-  <div class="ph">
-    <div><div class="pt">Sales FMS</div>
-    <div class="ps">Field Management System Live leads pipeline from Google Sheets</div></div>
-    <div class="ha">
-      <input class="fi fi-lg" id="fms-q" type="text" placeholder="Search company, doer, step..." oninput="fmsSearch()">
-      <button class="btn btno" onclick="exportTbl('fms-body',fmsHdr)">Export CSV</button>
-      <a class="btn btno" style="text-decoration:none;font-size:11px" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank">Open Original Tool</a>
-    </div>
-  </div>
-
-  <! HERO KPIs >
-  <div class="fms-kpis" id="fms-kpis">
-    <div class="fkpi2 fk1" onclick="fmsFilter('all',this)" id="fk-all">
-      <div class="fk-lbl">Total Leads</div>
-      <div class="fk-val" id="fms-total">...</div>
-      <div class="fk-sub">All pipeline entries</div>
-    </div>
-    <div class="fkpi2 fk2" onclick="fmsFilter('incoming',this)" id="fk-incoming">
-      <div class="fk-lbl">New Incoming Party</div>
-      <div class="fk-val" id="fms-incoming">...</div>
-      <div class="fk-sub">Inbound leads</div>
-    </div>
-    <div class="fkpi2 fk3" onclick="fmsFilter('outgoing',this)" id="fk-outgoing">
-      <div class="fk-lbl">New Outgoing Party</div>
-      <div class="fk-val" id="fms-outgoing">...</div>
-      <div class="fk-sub">Outbound leads</div>
-    </div>
-    <div class="fkpi2 fk4" onclick="fmsFilter('nbd',this)" id="fk-nbd">
-      <div class="fk-lbl">NBD CRR</div>
-      <div class="fk-val" id="fms-nbd">...</div>
-      <div class="fk-sub">New business dev</div>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 220px;gap:14px;align-items:start">
-    <! FUNNEL >
-    <div class="card">
-      <div class="ch">
-        <div class="ct">Sales Funnel</div>
-        <span class="pill pg2">Live from Leads Sheet</span>
+<! ══════════ SALES FMS ══════════ >
+<div class="screen" id="sc-sales-fms" style="padding:0;height:calc(100vh - var(--topbar))">
+  <div class="iframe-shell">
+    <div class="iframe-bar">
+      <div>
+        <div class="iframe-label">Sales FMS</div>
+        <div class="iframe-url">script.google.com/a/macros/takkarpolychem.com</div>
       </div>
-      <div class="cb" id="fms-funnel">
-        <div class="ld"><div class="spin"></div>Building funnel...</div>
-      </div>
-      <! FILTER BUTTONS >
-      <div class="ca" id="fms-filter-row">
-        <button class="fms-ftab fms-act" onclick="fmsFilter('all',this)">All</button>
-        <button class="fms-ftab" onclick="fmsFilter('incoming',this)">New Incoming Party</button>
-        <button class="fms-ftab" onclick="fmsFilter('outgoing',this)">New Outgoing Party</button>
-        <button class="fms-ftab" onclick="fmsFilter('nbd',this)">NBD CRR</button>
-        <button class="fms-ftab" onclick="fmsFilter('won',this)">Order Won</button>
-        <button class="fms-ftab" onclick="fmsFilter('lost',this)">Order Lost</button>
-        <button class="fms-ftab fms-meetings">Meetings <span class="fms-mtag" id="fms-meetings-count">0</span></button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="open-btn" onclick="tryLoadFMS()">Load Inline</button>
+        <a class="open-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank">Open in New Tab</a>
       </div>
     </div>
-
-    <! LEAD STEPS LEGEND >
-    <div class="lead-steps-box">
-      <div class="lead-steps-title">Lead Steps</div>
-      <div class="lead-step-item"><div class="ls-num">1</div>Mail Send</div>
-      <div class="lead-step-item"><div class="ls-num">2</div>Technical Discussion</div>
-      <div class="lead-step-item"><div class="ls-num">3</div>Meeting Schedule</div>
-      <div class="lead-step-item"><div class="ls-num">4</div>Sample Send</div>
-      <div class="lead-step-item"><div class="ls-num">5</div>Price / Negotiation</div>
-      <div class="lead-step-item"><div class="ls-num">6</div>Call for PO</div>
-    </div>
-  </div>
-
-  <! LEADS TABLE >
-  <div class="card">
-    <div class="ch">
-      <div class="ct" id="fms-table-title">All Leads</div>
-      <span class="pill pg2">Live</span>
-    </div>
-    <div id="fms-loading" class="ld"><div class="spin"></div>Loading leads data...</div>
-    <div class="tw" id="fms-table" style="display:none">
-      <table>
-        <thead id="fms-head"></thead>
-        <tbody id="fms-body"></tbody>
-      </table>
+    <div class="iframe-body" id="fms-iframe-body">
+      <iframe id="iframe-fms" src="" style="width:100%;height:100%;border:none;display:block"></iframe>
+      <div class="iframe-overlay" id="fms-cover">
+        <div class="ov-icon">
+          <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="#1a6e3c" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-7"/></svg>
+        </div>
+        <div class="ov-title">Sales FMS</div>
+        <div class="ov-sub">Field Management System for the Sales team. You need to be signed in to your Google Workspace account (takkarpolychem.com). Click <strong>Load Inline</strong> to try loading inside this portal, or open in a new tab.</div>
+        <button class="ov-btn" onclick="tryLoadFMS()">Load Inline</button>
+        <a class="ov-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank" style="text-decoration:none;margin-top:6px">Open in New Tab</a>
+        <div class="ov-note">If inline loading fails, use the new tab option</div>
+      </div>
     </div>
   </div>
 </div>
@@ -2323,6 +2266,17 @@ function renderPendingOrders(){
 
 function filterPendingOrders(){ renderPendingOrders(); }
 
+
+// ── SALES FMS INLINE LOAD ─────────────────────────────
+function tryLoadFMS(){
+  const iframe = document.getElementById('iframe-fms');
+  const cover  = document.getElementById('fms-cover');
+  if(iframe){
+    iframe.src = 'https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec';
+    // Hide cover after short delay to let iframe attempt load
+    setTimeout(()=>{ if(cover) cover.style.display='none'; }, 2000);
+  }
+}
 </script>
 </body>
 </html>
