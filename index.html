@@ -1161,70 +1161,73 @@ tbody tr:hover td{background:var(--s50)}
 //  CONFIG
 // ══════════════════════════════════════════════════
 const SHEETS = {
-  sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order',                   gid:'1509431082' },
-  dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch',                gid:null },
-  pending:  { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'pending sales',            gid:null },
-  leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1',                  gid:'0'  },
-  stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data', gid:'0'  },
+  sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order' },
+  dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch' },
+  pending:  { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'pending sales' },
+  leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1' },
+  stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data' },
 };
 
-function parseGviz(text){
-  const s=text.indexOf('{'), e=text.lastIndexOf('}');
-  if(s<0||e<0) throw new Error('No JSON');
-  const j=JSON.parse(text.substring(s,e+1));
-  if(!j.table) throw new Error('No table');
-  return j;
-}
+// ── FETCH SHEET ──────────────────────────────────────────────────
+// EXACT working version — allorigins proxy, simple and reliable
+async function fetchSheet(key) {
+  if (cache[key]) return cache[key];
+  const { id, tab } = SHEETS[key];
+  const sheetUrl = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
 
-function fetchWithTimeout(url, ms){
-  const ctrl=new AbortController();
-  const id=setTimeout(()=>ctrl.abort(), ms||8000);
-  return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(id));
-}
-
-function sheetUrl(key, useGid){
-  const {id,tab,gid}=SHEETS[key];
-  const base='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json';
-  if(useGid && gid) return base+'&gid='+gid;
-  return base+'&sheet='+encodeURIComponent(tab);
-}
-
-async function fetchSheet(key){
-  if(cache[key]) return cache[key];
-  const isLocal=location.protocol==='file:';
-  const urls=SHEETS[key].gid?[sheetUrl(key,true),sheetUrl(key,false)]:[sheetUrl(key,false)];
-
-  for(const url of urls){
-    // Direct fetch (skip on file:// — browsers block it)
-    if(!isLocal){
-      try{
-        const r=await fetchWithTimeout(url,6000);
-        if(r.ok){
-          const t=await r.text();
-          if(t.includes('table')){
-            const j=parseGviz(t);
-            cache[key]=j.table; return j.table;
-          }
-        }
-      }catch(e){}
-    }
-
-    // allorigins proxy — works from file:// and any origin
-    try{
-      const proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
-      const r=await fetchWithTimeout(proxy,12000);
-      if(r.ok){
-        const d=await r.json();
-        if(d.contents && d.contents.includes('table')){
-          const j=parseGviz(d.contents);
-          cache[key]=j.table; return j.table;
-        }
-      }
-    }catch(e){}
+  function parseGviz(text) {
+    const start = text.indexOf('{');
+    const end   = text.lastIndexOf('}');
+    if (start === -1 || end === -1) throw new Error('No JSON found');
+    return JSON.parse(text.substring(start, end + 1));
   }
 
-  console.error('[TPPL ERP] Failed:', key);
-  return null;
+  // 1) Try direct fetch (works on Vercel / hosted)
+  try {
+    const res = await fetch(sheetUrl, { mode: 'cors' });
+    if (res.ok) {
+      const text = await res.text();
+      const json = parseGviz(text);
+      cache[key] = json.table;
+      return json.table;
+    }
+  } catch(e) { /* CORS blocked — try proxy */ }
+
+  // 2) allorigins proxy (works from file:// and any origin)
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(sheetUrl)}`;
+    const res   = await fetch(proxy);
+    const data  = await res.json();
+    const json  = parseGviz(data.contents);
+    cache[key]  = json.table;
+    return json.table;
+  } catch(e2) {
+    console.error('[TPPL ERP] Failed to load sheet:', key, e2);
+    return null;
+  }
+}
+
+// Diagnostic: run from Dashboard to check all sheets
+async function runDiagnostic() {
+  const el = document.getElementById('diag-output');
+  if (!el) return;
+  el.style.display = 'block';
+  el.innerHTML = '<b>Running diagnostics...</b><br>';
+  for (const key of Object.keys(SHEETS)) {
+    el.innerHTML += 'Testing ' + key + '...<br>';
+    const t0 = Date.now();
+    // Clear cache to force fresh fetch
+    delete cache[key];
+    const t = await fetchSheet(key);
+    const ms = Date.now() - t0;
+    if (t && t.rows && t.rows.length) {
+      el.innerHTML += '<span style="color:#15803d"><b>OK</b> ' + key + ': ' + t.rows.length + ' rows (' + ms + 'ms)</span><br>';
+    } else {
+      el.innerHTML += '<span style="color:#dc2626"><b>FAIL</b> ' + key + ': no data (' + ms + 'ms) — check tab name or share the sheet publicly</span><br>';
+    }
+  }
+  el.innerHTML += '<b>Done. Reloading data...</b>';
+  await loadAllData();
 }
 
 async function runDiagnostic(){
