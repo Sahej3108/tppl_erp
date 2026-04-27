@@ -536,6 +536,7 @@ tr:hover td{background:var(--s50)}
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────
+// Sheet IDs and tab names
 const SHEETS = {
   sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order' },
   dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch' },
@@ -546,19 +547,42 @@ const SHEETS = {
 let leadsHeaders = [], stockHeaders = [];
 const cache = {};
 
-// ── FETCH SHEET ─────────────────────────────────────────────────
+// ── FETCH SHEET ──────────────────────────────────────────────────
+// Uses allorigins proxy to bypass CORS — works from local files AND Vercel
 async function fetchSheet(key) {
   if (cache[key]) return cache[key];
   const { id, tab } = SHEETS[key];
-  const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+  const sheetUrl = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+
+  function parseGviz(text) {
+    // Strip the google.visualization.Query.setResponse( ... ) wrapper
+    const start = text.indexOf('{');
+    const end   = text.lastIndexOf('}');
+    if (start === -1 || end === -1) throw new Error('No JSON found');
+    return JSON.parse(text.substring(start, end + 1));
+  }
+
+  // 1) Try direct fetch (works on Vercel / hosted server)
   try {
-    const res  = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    cache[key] = json.table;
+    const res = await fetch(sheetUrl, { mode: 'cors' });
+    if (res.ok) {
+      const text = await res.text();
+      const json = parseGviz(text);
+      cache[key] = json.table;
+      return json.table;
+    }
+  } catch(e) { /* CORS blocked — try proxy */ }
+
+  // 2) CORS proxy fallback (works from file:// and any origin)
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(sheetUrl)}`;
+    const res   = await fetch(proxy);
+    const data  = await res.json();
+    const json  = parseGviz(data.contents);
+    cache[key]  = json.table;
     return json.table;
-  } catch(e) {
-    console.error('Sheet fetch error:', key, e);
+  } catch(e2) {
+    console.error('[TPPL ERP] Failed to load sheet:', key, e2);
     return null;
   }
 }
