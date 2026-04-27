@@ -872,20 +872,20 @@ tbody tr:hover td{background:var(--s50)}
   <div class="ph">
     <div><div class="pt">Leads</div><div class="ps">Live data from leads sheet</div></div>
     <div class="ha">
-      <input class="fi fi-lg" id="ld-q" type="text" placeholder="Search leads..." oninput="filterTbl('ld-body','ld-q')">
-      <button class="btn btno" onclick="exportTbl('ld-body',leadsHdr)">Export CSV</button>
+      <input class="fi fi-lg" id="ld-q" type="text" placeholder="Search leads..." oninput="filterTbl('leads-tbody','ld-q')">
+      <button class="btn btno" onclick="exportTbl('leads-tbody',leadsHdr)">Export CSV</button>
     </div>
   </div>
   <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
-    <div class="kpi g"><div class="kpi-label">Total Leads</div><div class="kpi-val" id="ld-k1">...</div></div>
-    <div class="kpi b"><div class="kpi-label">Columns</div><div class="kpi-val" id="ld-k2">...</div></div>
+    <div class="kpi g"><div class="kpi-label">Total Leads</div><div class="kpi-val" id="dm-leads">...</div></div>
+    <div class="kpi b"><div class="kpi-label">Columns</div><div class="kpi-val" id="ld-cols">...</div></div>
     <div class="kpi a"><div class="kpi-label">Sheet</div><div class="kpi-val" style="font-size:14px">Leads DB</div></div>
   </div>
   <div class="card">
     <div class="ch"><div class="ct">All Leads</div><span class="pill pg2">Live</span></div>
-    <div id="ld-loading" class="ld"><div class="spin"></div>Loading leads data...</div>
-    <div class="tw" id="ld-table" style="display:none">
-      <table><thead id="ld-head"></thead><tbody id="ld-body"></tbody></table>
+    <div id="leads-loading" class="ld"><div class="spin"></div>Loading leads data...</div>
+    <div class="tw" id="leads-table-wrap" style="display:none">
+      <table><thead id="leads-thead"></thead><tbody id="leads-tbody"></tbody></table>
     </div>
   </div>
 </div>
@@ -1561,35 +1561,32 @@ async function loadDispatch(){
 }
 
 // ── LEADS ────────────────────────────────────────
-async function loadLeads(){
+async function loadLeads() {
   const t = await fetchSheet('leads');
-  const loading = document.getElementById('ld-loading');
-  const wrap    = document.getElementById('ld-table');
-  if(!t || !t.rows){
-    if(loading) loading.innerHTML = '<span style="color:var(--rm)">Could not load leads data. Make sure the sheet is shared publicly (Anyone with link can view).</span>';
+  const loading = document.getElementById('leads-loading');
+  const wrap    = document.getElementById('leads-table-wrap');
+  const tbody   = document.getElementById('leads-tbody');
+  const thead   = document.getElementById('leads-thead');
+  if (!t || !t.rows) {
+    if(loading) loading.innerHTML = '<span style="color:var(--rm)">Could not load leads data. Make sure the sheet is shared publicly.</span>';
     return;
   }
-  // Build headers
   const cols = t.cols || [];
-  leadsHdr = cols.map(c => c.label || '').filter(h => h);
-  if(!leadsHdr.length && t.rows[0])
-    leadsHdr = t.rows[0].c.map((_,i) => 'Col '+(i+1));
-  const hCols = leadsHdr.slice(0, 10);
-
-  document.getElementById('ld-head').innerHTML =
-    '<tr>' + hCols.map(h => `<th>${h}</th>`).join('') + '</tr>';
-
-  const rows = t.rows.filter(r => r.c && r.c.some(c => c && c.v));
-  document.getElementById('ld-k1').textContent = ind(rows.length);
-  document.getElementById('ld-k2').textContent = hCols.length;
-  document.getElementById('ld-body').innerHTML = rows.map(r =>
+  leadsHeaders = cols.map(c => c.label || '');
+  const validCols = cols.map((c,i) => i).filter(i => cols[i].label);
+  if (!validCols.length && t.rows[0]) {
+    leadsHeaders = t.rows[0].c.map((_,i) => 'Col ' + (i+1));
+  }
+  const hCols = leadsHeaders.filter(h => h).slice(0, 8);
+  thead.innerHTML = '<tr>' + hCols.map(h => `<th>${h}</th>`).join('') + '</tr>';
+  leadsRows = t.rows.filter(r => r.c && r.c.some(c => c && c.v));
+  if(document.getElementById('dm-leads')) document.getElementById('dm-leads').textContent = leadsRows.length;
+  tbody.innerHTML = leadsRows.map(r =>
     '<tr>' + hCols.map((_,i) => `<td>${fv(cv(r.c[i]))}</td>`).join('') + '</tr>'
-  ).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--s400);padding:20px">No leads data</td></tr>';
-
+  ).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--s400)">No leads data</td></tr>';
   if(loading) loading.style.display = 'none';
   if(wrap)    wrap.style.display    = 'block';
 }
-
 // ── STOCK ─────────────────────────────────────────
 async function loadStock(){
   const t=await fetchSheet('stock');
@@ -1922,111 +1919,110 @@ const FMS_STEPS = [
   {label:'Order Lost',               keys:['lost','order lost'],                     cls:'flost'},
 ];
 
-async function loadFMS(){
-  // Reuse cache from loadLeads — same sheet
-  const t = cache['leads'] || await fetchSheet('leads');
+async function loadFMS() {
   const loading = document.getElementById('fms-loading');
   const wrap    = document.getElementById('fms-table');
-  if(!t||!t.rows){
-    if(loading) loading.innerHTML='<span style="color:var(--rm)">Could not load leads. Please share spreadsheets/d/1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU as Anyone with link can view.</span>';
-    if(document.getElementById('fms-funnel')) document.getElementById('fms-funnel').innerHTML='<div class="empty-st">No leads data available</div>';
+
+  // Use cached leads data; fetch if not ready yet
+  let t = cache['leads'];
+  if (!t) t = await fetchSheet('leads');
+  if (!t || !t.rows) {
+    if(loading) loading.innerHTML = '<span style="color:var(--rm)">Could not load Sales FMS data. Make sure the leads sheet is shared publicly.</span>';
     return;
   }
 
-  // Build headers
-  const cols = (t.cols||[]).map(c=>c.label||'').filter(h=>h);
-  fmsHdr = cols.length ? cols : [];
+  const cols = t.cols || [];
+  fmsHdr = cols.map(c => c.label || '').filter(h => h);
+  if (!fmsHdr.length && t.rows[0])
+    fmsHdr = t.rows[0].c.map((_,i) => 'Col '+(i+1));
 
-  // Show specific columns matching screenshot: Company, Requirement, Phone, Start Date, Doer Name, Step
-  const PRIORITY_COLS = ['company','requirement','phone','mobile','start','date','doer','step','status','stage','type'];
-  let visCols = [];
-  if(cols.length){
-    // Sort by priority
-    const prioritized = cols.map((h,i)=>({h,i,score:PRIORITY_COLS.findIndex(k=>h.toLowerCase().includes(k))}))
-      .sort((a,b)=>a.score===b.score?a.i-b.i:(a.score<0?1:b.score<0?-1:a.score-b.score))
-      .slice(0,8);
-    visCols = prioritized.sort((a,b)=>a.i-b.i);
-  }
-  const visIdx = visCols.length ? visCols.map(c=>c.i) : [0,1,2,3,4,5,6,7].slice(0,Math.min(8,cols.length));
-  const visHeaders = visIdx.map(i=>cols[i]||'Col '+(i+1));
-
-  document.getElementById('fms-head').innerHTML =
-    '<tr>'+visHeaders.map(h=>`<th>${h}</th>`).join('')+'</tr>';
-
-  fmsRows = t.rows.filter(r=>r.c&&r.c.some(c=>c&&c.v));
+  fmsRows = t.rows.filter(r => r.c && r.c.some(c => c && c.v));
   fmsFiltered = fmsRows;
 
-  // Find step column index
-  const stepColIdx = cols.findIndex(h=>
-    h.toLowerCase().includes('step')||h.toLowerCase().includes('stage')||
-    h.toLowerCase().includes('status')||h.toLowerCase().includes('lead step'));
-  const typeColIdx = cols.findIndex(h=>
-    h.toLowerCase().includes('type')||h.toLowerCase().includes('party')||
-    h.toLowerCase().includes('incoming')||h.toLowerCase().includes('outgoing'));
+  // Find key column indices
+  const stepIdx = fmsHdr.findIndex(h =>
+    /(step|stage|status|lead step)/i.test(h));
+  const typeIdx = fmsHdr.findIndex(h =>
+    /(type|party type|incoming|outgoing)/i.test(h));
 
-  // Count KPIs
-  let incoming=0,outgoing=0,nbd=0,meetings=0,won=0,lost=0;
-  fmsRows.forEach(r=>{
-    const s  = fv(cv(r.c[stepColIdx>=0?stepColIdx:0])).toLowerCase();
-    const tp = fv(cv(r.c[typeColIdx>=0?typeColIdx:0])).toLowerCase();
-    if(tp.includes('incoming')||s.includes('incoming')) incoming++;
-    else if(tp.includes('outgoing')||s.includes('outgoing')) outgoing++;
-    if(tp.includes('nbd')||s.includes('nbd')) nbd++;
+  // KPI counts
+  let incoming=0, outgoing=0, nbd=0, meetings=0, won=0, lost=0;
+  fmsRows.forEach(r => {
+    const s  = fv(cv(r.c[stepIdx >= 0 ? stepIdx : 0])).toLowerCase();
+    const tp = fv(cv(r.c[typeIdx >= 0 ? typeIdx : 0])).toLowerCase();
+    if(tp.includes('incoming') || s.includes('incoming')) incoming++;
+    else if(tp.includes('outgoing') || s.includes('outgoing')) outgoing++;
+    if(s.includes('nbd')) nbd++;
     if(s.includes('meeting')) meetings++;
-    if(s.includes('won')||s.includes('order won')) won++;
-    if(s.includes('lost')||s.includes('order lost')) lost++;
+    if(s.includes('won') || s.includes('order won')) won++;
+    if(s.includes('lost') || s.includes('order lost')) lost++;
   });
 
-  document.getElementById('fms-total').textContent    = ind(fmsRows.length);
-  document.getElementById('fms-incoming').textContent = ind(incoming)||'0';
-  document.getElementById('fms-outgoing').textContent = ind(outgoing)||'0';
-  document.getElementById('fms-nbd').textContent      = ind(nbd)||'0';
-  document.getElementById('fms-meetings-count').textContent = meetings;
+  if(document.getElementById('fms-total'))    document.getElementById('fms-total').textContent    = ind(fmsRows.length);
+  if(document.getElementById('fms-incoming')) document.getElementById('fms-incoming').textContent = ind(incoming) || '0';
+  if(document.getElementById('fms-outgoing')) document.getElementById('fms-outgoing').textContent = ind(outgoing) || '0';
+  if(document.getElementById('fms-nbd'))      document.getElementById('fms-nbd').textContent      = ind(nbd) || '0';
+  if(document.getElementById('fms-meetings-count')) document.getElementById('fms-meetings-count').textContent = meetings;
 
   // Build funnel
-  const stepCounts = FMS_STEPS.map((step,i)=>{
-    if(i===0) return fmsRows.length;
-    return fmsRows.filter(r=>{
-      const s=(stepColIdx>=0?fv(cv(r.c[stepColIdx])):'').toLowerCase();
-      return step.keys.some(k=>k&&s.includes(k));
+  const stepCounts = FMS_STEPS.map((step, i) => {
+    if(i === 0) return fmsRows.length;
+    return fmsRows.filter(r => {
+      const s = (stepIdx >= 0 ? fv(cv(r.c[stepIdx])) : '').toLowerCase();
+      return step.keys.some(k => k && s.includes(k));
     }).length;
   });
 
-  // If no step data found, use proportional fallback
-  const hasStepData = stepCounts.slice(1).some(v=>v>0);
-  if(!hasStepData){
-    const n=fmsRows.length;
+  const hasStepData = stepCounts.slice(1).some(v => v > 0);
+  if(!hasStepData) {
+    const n = fmsRows.length;
     stepCounts[1]=n; stepCounts[2]=Math.round(n*.88); stepCounts[3]=Math.round(n*.77);
     stepCounts[4]=Math.round(n*.29); stepCounts[5]=Math.round(n*.23);
     stepCounts[6]=Math.round(n*.17); stepCounts[7]=won||Math.round(n*.13);
     stepCounts[8]=lost||Math.round(n*.09);
   }
 
-  const maxCount = stepCounts[0]||1;
-  document.getElementById('fms-funnel').innerHTML =
-    FMS_STEPS.map((step,i)=>{
-      const count = stepCounts[i];
-      const pct   = Math.round(count/maxCount*100);
-      const prevPct = i>0&&stepCounts[i-1]>0 ? Math.round(count/stepCounts[i-1]*100) : null;
-      const badge = prevPct!==null
-        ? `<span class="funnel2-badge">from prev: ${prevPct}%</span>` : '';
-      return `<div class="funnel2-row">
-        <div class="funnel2-lbl">${step.label}</div>
-        <div class="funnel2-track">
-          <div class="funnel2-fill ${step.cls}" style="width:${pct}%"></div>
-        </div>
-        <div class="funnel2-num">${ind(count)}</div>
-        <div class="funnel2-pct">(${pct}%)</div>
-        ${badge}
-      </div>`;
-    }).join('');
+  const maxCount = stepCounts[0] || 1;
+  const funnelEl = document.getElementById('fms-funnel');
+  if(funnelEl) funnelEl.innerHTML = FMS_STEPS.map((step, i) => {
+    const count   = stepCounts[i];
+    const pct     = Math.round(count / maxCount * 100);
+    const prevPct = i > 0 && stepCounts[i-1] > 0 ? Math.round(count / stepCounts[i-1] * 100) : null;
+    const badge   = prevPct !== null ? `<span class="funnel-prev">from prev: ${prevPct}%</span>` : '';
+    return `<div class="funnel-row">
+      <div class="funnel-lbl">${step.label}</div>
+      <div class="funnel-track"><div class="funnel-fill ${step.cls}" style="width:${pct}%"></div></div>
+      <div class="funnel-count">${ind(count)}</div>
+      <div class="funnel-pct">(${pct}%)</div>
+      ${badge}
+    </div>`;
+  }).join('');
 
-  // Render table
-  renderFmsTable(fmsRows, visIdx, visHeaders);
-  loading.style.display='none';
-  wrap.style.display='block';
+  // Render table — show first 8 columns
+  const visIdx = fmsHdr.slice(0, 8).map((_,i) => i);
+  const visHeaders = visIdx.map(i => fmsHdr[i] || '');
+  if(document.getElementById('fms-head'))
+    document.getElementById('fms-head').innerHTML =
+      '<tr>' + visHeaders.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+  if(document.getElementById('fms-body'))
+    document.getElementById('fms-body').innerHTML = fmsRows.map(r =>
+      '<tr>' + visIdx.map(i => {
+        const v = fv(cv(r.c[i]));
+        const h = (fmsHdr[i] || '').toLowerCase();
+        if(h.includes('step') || h.includes('stage')) {
+          const lv = v.toLowerCase();
+          const cls = lv.includes('won') ? 'pg' : lv.includes('lost') ? 'pr' : lv.includes('meeting') ? 'pa' : 'pb';
+          return `<td><span class="pill ${cls}" style="font-size:10px">${v}</span></td>`;
+        }
+        if(h.includes('phone') || h.includes('mobile')) return `<td class="mono">${v}</td>`;
+        return `<td>${v}</td>`;
+      }).join('') + '</tr>'
+    ).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--s400)">No data</td></tr>';
+
+  if(loading) loading.style.display = 'none';
+  if(wrap)    wrap.style.display    = 'block';
 }
-
 function renderFmsTable(rows, visIdx, headers){
   const hdr = headers || visIdx.map(i=>fmsHdr[i]||'');
   document.getElementById('fms-body').innerHTML = rows.length
