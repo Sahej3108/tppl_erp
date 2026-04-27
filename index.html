@@ -1562,23 +1562,32 @@ async function loadDispatch(){
 
 // ── LEADS ────────────────────────────────────────
 async function loadLeads(){
-  const t=await fetchSheet('leads');
-  const loading=document.getElementById('ld-loading');
-  const wrap=document.getElementById('ld-table');
-  if(!t||!t.rows){
-    if(loading) loading.innerHTML='<span style="color:var(--rm)">Leads sheet not accessible. Please share it: <strong>spreadsheets/d/1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU</strong> → Share → Anyone with link → Viewer</span>';
+  const t = await fetchSheet('leads');
+  const loading = document.getElementById('ld-loading');
+  const wrap    = document.getElementById('ld-table');
+  if(!t || !t.rows){
+    if(loading) loading.innerHTML = '<span style="color:var(--rm)">Could not load leads data. Make sure the sheet is shared publicly (Anyone with link can view).</span>';
     return;
   }
-  const cols=(t.cols||[]).map(c=>c.label||'').filter(h=>h).slice(0,10);
-  leadsHdr=cols;
-  document.getElementById('ld-head').innerHTML='<tr>'+cols.map(h=>`<th>${h}</th>`).join('')+'</tr>';
-  const rows=t.rows.filter(r=>r.c&&r.c.some(c=>c&&c.v));
-  document.getElementById('ld-k1').textContent=ind(rows.length);
-  document.getElementById('ld-k2').textContent=cols.length;
-  document.getElementById('ld-body').innerHTML=rows.map(r=>
-    '<tr>'+cols.map((_,i)=>`<td>${fv(cv(r.c[i]))}</td>`).join('')+'</tr>'
-  ).join('');
-  loading.style.display='none'; wrap.style.display='block';
+  // Build headers
+  const cols = t.cols || [];
+  leadsHdr = cols.map(c => c.label || '').filter(h => h);
+  if(!leadsHdr.length && t.rows[0])
+    leadsHdr = t.rows[0].c.map((_,i) => 'Col '+(i+1));
+  const hCols = leadsHdr.slice(0, 10);
+
+  document.getElementById('ld-head').innerHTML =
+    '<tr>' + hCols.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+  const rows = t.rows.filter(r => r.c && r.c.some(c => c && c.v));
+  document.getElementById('ld-k1').textContent = ind(rows.length);
+  document.getElementById('ld-k2').textContent = hCols.length;
+  document.getElementById('ld-body').innerHTML = rows.map(r =>
+    '<tr>' + hCols.map((_,i) => `<td>${fv(cv(r.c[i]))}</td>`).join('') + '</tr>'
+  ).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--s400);padding:20px">No leads data</td></tr>';
+
+  if(loading) loading.style.display = 'none';
+  if(wrap)    wrap.style.display    = 'block';
 }
 
 // ── STOCK ─────────────────────────────────────────
@@ -1914,8 +1923,8 @@ const FMS_STEPS = [
 ];
 
 async function loadFMS(){
-  // Fetch leads data fresh (independent of loadLeads)
-  const t = await fetchSheet('leads');
+  // Reuse cache from loadLeads — same sheet
+  const t = cache['leads'] || await fetchSheet('leads');
   const loading = document.getElementById('fms-loading');
   const wrap    = document.getElementById('fms-table');
   if(!t||!t.rows){
