@@ -600,8 +600,12 @@ tbody tr:hover td{background:var(--s50)}
     <div class="ha">
       <span class="pill px2" id="data-time">Loading data...</span>
       <button class="btn btno" onclick="go('sales',document.querySelectorAll('.ni')[1],'Sales Orders')">View All Orders</button>
+      <button class="btn btno" onclick="runDiagnostic()" style="border-color:#2563eb;color:#2563eb;font-size:11px">Run Sheet Diagnostic</button>
     </div>
   </div>
+
+  <!-- Diagnostic output -->
+  <div id="diag-output" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;font-size:11px;font-family:'JetBrains Mono',monospace;line-height:2;color:#334155;max-height:220px;overflow-y:auto"></div>
 
   <! KPI ROW 1 >
   <div class="kpi-row" id="kpi-row-1">
@@ -1157,87 +1161,89 @@ tbody tr:hover td{background:var(--s50)}
 //  CONFIG
 // ══════════════════════════════════════════════════
 const SHEETS = {
-  // Using both tab name AND gid for reliability
-  sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order',    gid:'1509431082' },
-  dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch', gid:null },
-  pending:  { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'pending sales', gid:null },
-  leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1',   gid:'0' },
-  stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data', gid:'0' },
+  sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order',                   gid:'1509431082' },
+  dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch',                gid:null },
+  pending:  { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'pending sales',            gid:null },
+  leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1',                  gid:'0'  },
+  stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data', gid:'0'  },
 };
-let salesRows=[], dispRows=[], leadsHdr=[], stockHdr=[];
-const cache={};
 
-// ══════════════════════════════════════════════════
-//  FETCH (with CORS proxy fallback)
-// ══════════════════════════════════════════════════
 function parseGviz(text){
-  // Find outermost { } handles google's wrapper format
   const s=text.indexOf('{'), e=text.lastIndexOf('}');
-  if(s<0||e<0) throw new Error('No JSON found in response');
-  return JSON.parse(text.substring(s,e+1));
+  if(s<0||e<0) throw new Error('No JSON');
+  const j=JSON.parse(text.substring(s,e+1));
+  if(!j.table) throw new Error('No table');
+  return j;
 }
 
-function sheetUrls(key){
+function fetchWithTimeout(url, ms){
+  const ctrl=new AbortController();
+  const id=setTimeout(()=>ctrl.abort(), ms||8000);
+  return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(id));
+}
+
+function sheetUrl(key, useGid){
   const {id,tab,gid}=SHEETS[key];
-  const base=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`;
-  const urls=[];
-  // Try GID first (most reliable), then tab name
-  if(gid) urls.push(base+`&gid=${gid}`);
-  urls.push(base+`&sheet=${encodeURIComponent(tab)}`);
-  // Also try lowercase
-  urls.push(base+`&sheet=${encodeURIComponent(tab.toLowerCase())}`);
-  return urls;
+  const base='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json';
+  if(useGid && gid) return base+'&gid='+gid;
+  return base+'&sheet='+encodeURIComponent(tab);
 }
-
-const PROXIES=[
-  url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
-];
 
 async function fetchSheet(key){
   if(cache[key]) return cache[key];
-  const urls=sheetUrls(key);
+  const isLocal=location.protocol==='file:';
+  const urls=SHEETS[key].gid?[sheetUrl(key,true),sheetUrl(key,false)]:[sheetUrl(key,false)];
 
   for(const url of urls){
-    // 1. Direct fetch
-    try{
-      const r=await fetch(url);
-      if(r.ok){
-        const t=await r.text();
-        if(t.includes('table')){
-          const j=parseGviz(t);
-          if(j.table){cache[key]=j.table;return j.table;}
+    // Direct fetch (skip on file:// — browsers block it)
+    if(!isLocal){
+      try{
+        const r=await fetchWithTimeout(url,6000);
+        if(r.ok){
+          const t=await r.text();
+          if(t.includes('table')){
+            const j=parseGviz(t);
+            cache[key]=j.table; return j.table;
+          }
         }
-      }
-    }catch(e){}
+      }catch(e){}
+    }
 
-    // 2. allorigins proxy
+    // allorigins proxy — works from file:// and any origin
     try{
-      const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      const proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
+      const r=await fetchWithTimeout(proxy,12000);
       if(r.ok){
         const d=await r.json();
-        if(d.contents&&d.contents.includes('table')){
+        if(d.contents && d.contents.includes('table')){
           const j=parseGviz(d.contents);
-          if(j.table){cache[key]=j.table;return j.table;}
-        }
-      }
-    }catch(e){}
-
-    // 3. corsproxy.io fallback
-    try{
-      const r=await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-      if(r.ok){
-        const t=await r.text();
-        if(t.includes('table')){
-          const j=parseGviz(t);
-          if(j.table){cache[key]=j.table;return j.table;}
+          cache[key]=j.table; return j.table;
         }
       }
     }catch(e){}
   }
 
-  console.error('[TPPL ERP] All fetch attempts failed for:', key);
+  console.error('[TPPL ERP] Failed:', key);
   return null;
+}
+
+async function runDiagnostic(){
+  const el=document.getElementById('diag-output');
+  if(!el) return;
+  el.style.display='block';
+  el.innerHTML='<b style="font-size:12px">Running diagnostics...</b><br>';
+  for(const key of Object.keys(SHEETS)){
+    el.innerHTML+='Testing '+key+'...<br>';
+    const t0=Date.now();
+    const t=await fetchSheet(key);
+    const ms=Date.now()-t0;
+    if(t&&t.rows&&t.rows.length){
+      el.innerHTML+='<span style="color:#15803d">OK '+key+': '+t.rows.length+' rows ('+ms+'ms)</span><br>';
+    } else {
+      el.innerHTML+='<span style="color:#dc2626">FAIL '+key+': no data ('+ms+'ms) - check tab name / sharing</span><br>';
+    }
+  }
+  el.innerHTML+='<b>Done.</b>';
 }
 
 // ══════════════════════════════════════════════════
