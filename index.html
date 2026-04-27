@@ -1174,6 +1174,7 @@ const SHEETS = {
   stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data' },
 };
 let salesRows = [], dispRows = [], leadsHdr = [], stockHdr = [];
+let fmsRows = [], fmsFiltered = [], fmsHdr = [];
 let soAllRows = [], scotRows = [], scotHdr = [], scotFiltered = [], allPendingData = [], pendingRows = [];
 let leadsHeaders = [], stockHeaders = [];
 const cache = {};
@@ -1365,7 +1366,7 @@ async function loadAll(){
     'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
   // Step 2: Load remaining sheets in background (non-blocking)
-  loadLeads().then(()=>{ loadScot(); });
+  loadLeads().then(()=>{ loadScot(); loadFMS(); });
   loadStock();
   loadPendingOrders();
 }
@@ -1564,7 +1565,7 @@ async function loadLeads(){
   const loading=document.getElementById('ld-loading');
   const wrap=document.getElementById('ld-table');
   if(!t||!t.rows){
-    loading.innerHTML='<span style="color:var(--rm)">Could not load make sheet public (Anyone with link can view).</span>';
+    if(loading) loading.innerHTML='<span style="color:var(--rm)">Leads sheet not accessible. Please share it: <strong>spreadsheets/d/1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU</strong> → Share → Anyone with link → Viewer</span>';
     return;
   }
   const cols=(t.cols||[]).map(c=>c.label||'').filter(h=>h).slice(0,10);
@@ -1585,7 +1586,7 @@ async function loadStock(){
   const loading=document.getElementById('st-loading');
   const wrap=document.getElementById('st-table');
   if(!t||!t.rows){
-    loading.innerHTML='<span style="color:var(--rm)">Could not load make sheet public.</span>';
+    if(loading) loading.innerHTML='<span style="color:var(--rm)">Stock sheet not accessible. Please share it: <strong>spreadsheets/d/1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc</strong> → Share → Anyone with link → Viewer</span>';
     return;
   }
   const cols=(t.cols||[]).map(c=>c.label||'').filter(h=>h).slice(0,10);
@@ -1898,7 +1899,7 @@ function scotFilter(val, el){
 // ══════════════════════════════════════════════════
 //  SALES FMS LIVE DATA
 // ══════════════════════════════════════════════════
-let fmsRows=[], fmsHdr=[], fmsFiltered=[];
+fmsRows=[]; fmsHdr=[]; fmsFiltered=[];
 const FMS_STEPS = [
   {label:'Total Leads',              keys:[''],               cls:'ftotal'},
   {label:'Step 1: Mail Send',        keys:['step 1','step1','mail send','mail'],      cls:''},
@@ -1917,7 +1918,8 @@ async function loadFMS(){
   const loading = document.getElementById('fms-loading');
   const wrap    = document.getElementById('fms-table');
   if(!t||!t.rows){
-    if(loading) loading.innerHTML='<span style="color:var(--rm)">Could not load please share the leads sheet publicly (Anyone with link can view).</span>';
+    if(loading) loading.innerHTML='<span style="color:var(--rm)">Could not load leads. Please share spreadsheets/d/1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU as Anyone with link can view.</span>';
+    if(document.getElementById('fms-funnel')) document.getElementById('fms-funnel').innerHTML='<div class="empty-st">No leads data available</div>';
     return;
   }
 
