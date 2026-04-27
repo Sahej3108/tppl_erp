@@ -359,6 +359,107 @@ tbody tr:hover td{background:var(--s50)}
   color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* ─── SCROLLBAR ──────────────────────────────────── */
+
+
+/* ─── ORDER WORKFLOW ───────────────────────────────── */
+.wf-steps{display:flex;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;margin:14px 16px 0}
+.wf-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;position:relative}
+.wf-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2px solid;transition:all .2s}
+.wf-dot.done{background:var(--g);border-color:var(--gd);color:#fff}
+.wf-dot.active{background:var(--b);border-color:#1d4ed8;color:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.15)}
+.wf-dot.warn{background:var(--a);border-color:#b45309;color:#fff;box-shadow:0 0 0 4px rgba(217,119,6,.15)}
+.wf-dot.pending{background:#fff;border-color:var(--s300);color:var(--s400)}
+.wf-lbl{font-size:9px;font-weight:600;color:var(--s500);text-align:center;max-width:70px;line-height:1.3}
+.wf-lbl.done{color:var(--gd)}.wf-lbl.active{color:var(--b)}.wf-lbl.warn{color:var(--a)}
+.wf-line{flex:1;height:2px;min-width:20px;background:var(--s200);margin-bottom:16px;flex-shrink:0}
+.wf-line.done{background:var(--g)}
+
+/* ORDER WORKFLOW TABLE */
+.owf-table table{font-size:11px}
+.owf-table th{font-size:10px;padding:8px 10px;background:var(--s50);color:var(--s500);font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--s200);white-space:nowrap}
+.owf-table td{padding:9px 10px;border-bottom:1px solid var(--s100);vertical-align:middle}
+.owf-table tr:last-child td{border-bottom:none}
+.owf-table tbody tr:hover td{background:var(--s50)}
+
+/* STAGE BADGES */
+.stage{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.stage-new{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.stage-crm{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+.stage-crm-call{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+.stage-dispatch{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
+.stage-collection{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.stage-done{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.stage-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ACTION PILLS */
+.action-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:none;font-family:var(--ff);transition:all .12s;white-space:nowrap}
+.ap-crm{background:#fef3c7;color:#92400e}
+.ap-crm:hover{background:#fde68a}
+.ap-dispatch{background:#dbeafe;color:#1e40af}
+.ap-dispatch:hover{background:#bfdbfe}
+.ap-collection{background:#dcfce7;color:#14532d}
+.ap-collection:hover{background:#bbf7d0}
+.ap-done{background:#f0fdf4;color:#15803d}
+
+/* WORKFLOW SUMMARY CARDS */
+.wf-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px}
+.wf-sc{border-radius:10px;padding:14px 16px;border:1px solid;cursor:pointer;transition:all .15s}
+.wf-sc:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.wf-sc.wf-new{background:#f8fafc;border-color:var(--s200)}
+.wf-sc.wf-crm{background:#fffbeb;border-color:#fde68a}
+.wf-sc.wf-disp{background:#eff6ff;border-color:#bfdbfe}
+.wf-sc.wf-coll{background:#f0fdf4;border-color:#bbf7d0}
+.wf-sc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.wf-sc.wf-new .wf-sc-label{color:var(--s500)}
+.wf-sc.wf-crm .wf-sc-label{color:#92400e}
+.wf-sc.wf-disp .wf-sc-label{color:#1e40af}
+.wf-sc.wf-coll .wf-sc-label{color:#14532d}
+.wf-sc-val{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.wf-sc.wf-new .wf-sc-val{color:var(--s700)}
+.wf-sc.wf-crm .wf-sc-val{color:#92400e}
+.wf-sc.wf-disp .wf-sc-val{color:#1e40af}
+.wf-sc.wf-coll .wf-sc-val{color:#14532d}
+.wf-sc-sub{font-size:10px;margin-top:3px;opacity:.7}
+
+/* DISPATCH DASHBOARD */
+.dd-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 16px;border-bottom:1px solid var(--s100)}
+.dd-title{font-size:13px;font-weight:800;color:var(--s900);letter-spacing:-.2px}
+.dd-meta{font-size:11px;color:var(--s500);margin-top:2px}
+.dd-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;background:var(--s50);border-bottom:1px solid var(--s100)}
+.dd-stat{font-size:11px;font-weight:600;color:var(--s600)}
+.dd-stat strong{color:var(--s900)}
+.dd-stat .pend{color:#d97706}.dd-stat .done{color:#16a34a}
+.dd-filter{padding:6px 11px;border:1.5px solid var(--s200);border-radius:7px;font-size:11px;font-family:var(--ff);background:#fff;color:var(--s700);outline:none;cursor:pointer;transition:border .12s}
+.dd-filter:focus{border-color:var(--g)}
+.dd-refresh{padding:6px 14px;background:var(--b);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;font-family:var(--ff);cursor:pointer;transition:background .12s}
+.dd-refresh:hover{background:#1d4ed8}
+.dd-body{overflow-x:auto}
+.dd-body table{width:100%;border-collapse:collapse;font-size:11px}
+.dd-body th{padding:8px 10px;background:var(--s50);color:var(--s500);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--s200);text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+.dd-body th:hover{color:var(--s800)}
+.dd-body td{padding:8px 10px;border-bottom:1px solid var(--s100);color:var(--s700);vertical-align:middle}
+.dd-body tr:hover td{background:var(--s50)}
+.dd-body tr:last-child td{border-bottom:none}
+.dd-id{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--s800)}
+.dd-date{font-family:var(--fm);font-size:10px;color:var(--s500)}
+.badge-pend{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:5px;font-size:10px;font-weight:800;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
+.badge-done{display:inline-block;background:var(--gl);color:var(--gd);border:1px solid var(--gb);border-radius:5px;font-size:10px;font-weight:800;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
+.badge-miss{display:block;font-size:9px;color:var(--rm);margin-top:2px;font-weight:600}
+.dd-done-btn{padding:4px 12px;background:var(--b);color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;font-family:var(--ff);cursor:pointer;transition:background .12s}
+.dd-done-btn:hover{background:#1d4ed8}
+.dd-done-btn.done{background:var(--gl);color:var(--gd);border:1px solid var(--gb)}
+
+/* PENDING ORDERS */
+.pord-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pord-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--s100)}
+.pord-row:last-child{border-bottom:none}
+.pord-party{flex:1;font-size:11px;font-weight:600;color:var(--s800)}
+.pord-product{font-size:11px;color:var(--s500);margin-top:1px}
+.pord-track{width:120px;height:8px;background:var(--s100);border-radius:4px;overflow:hidden;flex-shrink:0}
+.pord-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g),var(--gm))}
+.pord-nums{font-size:10px;color:var(--s500);white-space:nowrap;min-width:90px;text-align:right;flex-shrink:0}
+.pord-status{flex-shrink:0}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--s300);border-radius:3px}
 </style>
@@ -568,12 +669,113 @@ tbody tr:hover td{background:var(--s50)}
     <div class="kpi p"><div class="kpi-label">Products</div><div class="kpi-val" id="so-k3">...</div></div>
     <div class="kpi a"><div class="kpi-label">Total Qty</div><div class="kpi-val" id="so-k4">...</div></div>
   </div>
+
+  <!-- PENDING ORDERS SECTION -->
   <div class="card">
-    <div class="ch"><div class="ct">All Sales Orders</div><span class="pill pg2">Live</span></div>
+    <div class="ch">
+      <div class="ct">Pending vs Completed Orders</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pill pg2">Live</span>
+        <input class="fi" id="pord-q" type="text" placeholder="Search party or SO..." style="width:180px" oninput="filterPendingOrders()">
+        <select class="dd-filter" id="pord-filter" onchange="filterPendingOrders()">
+          <option value="ALL">All</option>
+          <option value="PENDING">Pending</option>
+          <option value="DONE">Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);padding:14px 16px;border-bottom:1px solid var(--s100)">
+      <div class="kpi g"><div class="kpi-label">Total Orders</div><div class="kpi-val" id="pord-k1">...</div></div>
+      <div class="kpi a"><div class="kpi-label">Pending</div><div class="kpi-val" id="pord-k2">...</div><div class="kpi-sub">Not dispatched yet</div></div>
+      <div class="kpi g"><div class="kpi-label">Completed</div><div class="kpi-val" id="pord-k3">...</div><div class="kpi-sub">Dispatched</div></div>
+      <div class="kpi b"><div class="kpi-label">Completion Rate</div><div class="kpi-val" id="pord-k4">...</div></div>
+    </div>
+    <div id="pord-loading" class="ld"><div class="spin"></div>Comparing sales orders vs dispatches...</div>
+    <div id="pord-table-wrap" style="display:none">
+      <div class="dd-body">
+        <table>
+          <thead><tr><th>SO No.</th><th>Date</th><th>Party Name</th><th>Product</th><th style="text-align:right">Ordered Qty</th><th style="text-align:right">Dispatched</th><th style="text-align:right">Pending</th><th>Progress</th><th>Status</th></tr></thead>
+          <tbody id="pord-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW SUMMARY -->
+  <div class="wf-summary" id="wf-summary">
+    <div class="wf-sc wf-new" onclick="filterWorkflow('new')">
+      <div class="wf-sc-label">New Orders</div>
+      <div class="wf-sc-val" id="wf-cnt-new">...</div>
+      <div class="wf-sc-sub">Awaiting action</div>
+    </div>
+    <div class="wf-sc wf-crm" onclick="filterWorkflow('crm')">
+      <div class="wf-sc-label">CRM: Call for Payment</div>
+      <div class="wf-sc-val" id="wf-cnt-crm">...</div>
+      <div class="wf-sc-sub">Advance payment pending</div>
+    </div>
+    <div class="wf-sc wf-disp" onclick="filterWorkflow('dispatch')">
+      <div class="wf-sc-label">Ready for Dispatch</div>
+      <div class="wf-sc-val" id="wf-cnt-disp">...</div>
+      <div class="wf-sc-sub">Payment received</div>
+    </div>
+    <div class="wf-sc wf-coll" onclick="filterWorkflow('collection')">
+      <div class="wf-sc-label">In Collection</div>
+      <div class="wf-sc-val" id="wf-cnt-coll">...</div>
+      <div class="wf-sc-sub">Dispatched, payment due</div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW PIPELINE LEGEND -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Order Workflow Pipeline</div>
+      <div style="font-size:10px;color:var(--s400)">Auto-detected from payment terms and dispatch status</div>
+    </div>
+    <div class="wf-steps">
+      <div class="wf-step"><div class="wf-dot done">1</div><div class="wf-lbl done">Sales Order<br>Created</div></div>
+      <div class="wf-line done"></div>
+      <div class="wf-step"><div class="wf-dot warn">2</div><div class="wf-lbl warn">CRM: Call<br>(Advance)</div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><div class="wf-dot active">3</div><div class="wf-lbl active">Dispatch<br>Scheduled</div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><div class="wf-dot pending">4</div><div class="wf-lbl">Dispatched</div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><div class="wf-dot pending">5</div><div class="wf-lbl">Collection<br>Pending</div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><div class="wf-dot pending">6</div><div class="wf-lbl">Payment<br>Received</div></div>
+    </div>
+    <div style="padding:10px 16px 14px;font-size:10px;color:var(--s500);display:flex;gap:16px;flex-wrap:wrap">
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--a);margin-right:4px"></span>Advance payment = CRM calls customer before dispatch</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--b);margin-right:4px"></span>Dispatched = moves to Collection stage</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--g);margin-right:4px"></span>Payment received = order closed</span>
+    </div>
+  </div>
+
+  <!-- ALL ORDERS WITH WORKFLOW STATUS -->
+  <div class="card owf-table">
+    <div class="ch">
+      <div class="ct" id="so-table-title">All Sales Orders</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pill pg2" id="so-live-badge">Live</span>
+        <input class="fi" id="so-q" type="text" placeholder="Search client, product, SO..." style="width:200px" oninput="filterSalesOrders()">
+        <select class="dd-filter" id="so-stage-filter" onchange="filterSalesOrders()">
+          <option value="all">All Stages</option>
+          <option value="new">New Orders</option>
+          <option value="crm">CRM: Call for Payment</option>
+          <option value="dispatch">Ready for Dispatch</option>
+          <option value="collection">In Collection</option>
+        </select>
+        <button class="btn btno" onclick="exportTbl('so-body',soHeaders)" style="font-size:11px">Export CSV</button>
+      </div>
+    </div>
     <div class="tw">
       <table>
-        <thead><tr><th>Date</th><th>Client Name</th><th>Product</th><th class="num">Qty</th><th>SO No.</th></tr></thead>
-        <tbody id="so-body"><tr><td colspan="5"><div class="ld"><div class="spin"></div>Loading sales data...</div></td></tr></tbody>
+        <thead><tr>
+          <th>SO No.</th><th>Date</th><th>Client Name</th><th>Product</th>
+          <th style="text-align:right">Qty</th><th>Payment Terms</th>
+          <th>Stage</th><th>Action Required</th>
+        </tr></thead>
+        <tbody id="so-body"><tr><td colspan="8"><div class="ld"><div class="spin"></div>Loading sales data...</div></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -613,6 +815,45 @@ tbody tr:hover td{background:var(--s50)}
       </table>
     </div>
   </div>
+
+  <!-- DISPATCH DASHBOARD (matching the Google Apps Script dashboard) -->
+  <div class="card" id="dd-card">
+    <div class="dd-header">
+      <div>
+        <div class="dd-title">DISPATCH DASHBOARD</div>
+        <div class="dd-meta">Double-click column header to sort &bull; Live from Dispatch sheet</div>
+      </div>
+      <button class="dd-refresh" onclick="renderDispatchDashboard()">Refresh</button>
+    </div>
+    <div class="dd-controls">
+      <input class="fi" id="dd-search" type="text" placeholder="Search Party / PO / Invoice / ID..." style="width:220px" oninput="renderDispatchDashboard()">
+      <select class="dd-filter" id="dd-status-filter" onchange="renderDispatchDashboard()">
+        <option value="ALL">ALL</option>
+        <option value="PENDING" selected>PENDING</option>
+        <option value="DONE">DONE</option>
+      </select>
+      <div class="dd-stat" id="dd-stat-text">Loading...</div>
+    </div>
+    <div class="dd-body">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="ddSort(0)">Unique ID</th>
+            <th onclick="ddSort(1)">Date</th>
+            <th onclick="ddSort(2)">Party Name</th>
+            <th onclick="ddSort(3)">PO</th>
+            <th onclick="ddSort(4)">SO</th>
+            <th onclick="ddSort(5)">Invoice</th>
+            <th onclick="ddSort(8)" style="text-align:right">Qty</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="dd-tbody"><tr><td colspan="9"><div class="ld"><div class="spin"></div>Loading dispatch dashboard...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <! ══════════ LEADS ══════════ >
@@ -918,6 +1159,7 @@ const SHEETS = {
   // Using both tab name AND gid for reliability
   sales:    { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'order',    gid:'1509431082' },
   dispatch: { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'Dispatch', gid:null },
+  pending:  { id:'1MgsPCBWo-GGbGf-I_Y0LRCtY64B1aVbVQQYpTqFI4NY', tab:'pending sales', gid:null },
   leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1',   gid:'0' },
   stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data', gid:'0' },
 };
@@ -1092,6 +1334,8 @@ function tryLoad(id){
 async function loadAll(){
   await Promise.all([loadSales(),loadDispatch(),loadLeads(),loadStock()]);
   await loadScot();
+  await loadPendingOrders();
+  renderDispatchDashboard();
   await loadFMS();
   buildDashboard();
   document.getElementById('data-time').textContent=
@@ -1099,19 +1343,38 @@ async function loadAll(){
 }
 
 // ── SALES ────────────────────────────────────────
+// Sales order column headers (detected dynamically)
+let soHeaders=['Date','Client','Product','Qty','SO No'];
+let soAllRows=[]; // enriched rows for workflow
+let soCurrentFilter='all';
+
 async function loadSales(){
   const t=await fetchSheet('sales');
   if(!t||!t.rows){
-    document.getElementById('so-body').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--rm);padding:16px">Could not load sales data. Make sure the sheet is shared publicly (Anyone with link can view).</td></tr>';
+    document.getElementById('so-body').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--rm);padding:16px">Could not load sales data. Make sure the sheet is shared publicly.</td></tr>';
     return;
   }
   salesRows=t.rows.filter(r=>r.c&&r.c[0]&&r.c[0].v);
+
+  // Detect columns from headers
+  const cols=(t.cols||[]).map(c=>(c.label||'')).map(h=>h.toLowerCase());
+  const ptIdx = cols.findIndex(h=>/(payment|terms|pay term|credit|advance)/i.test(h));
+  const soIdx = cols.findIndex(h=>/(so no|sales order|so#|so num)/i.test(h));
+  const dateIdx=0, clientIdx=1, prodIdx=2, qtyIdx=3;
+  const soColIdx = soIdx>=0 ? soIdx : 4;
+
+  // Build full header list from sheet
+  const rawHdrs=(t.cols||[]).map(c=>c.label||'').filter(h=>h);
+  if(rawHdrs.length) soHeaders=rawHdrs;
+
+  // Compute dispatched SOs set (cross-ref with dispatch sheet)
+  const dispatchedSOs=new Set(dispRows.map(r=>fv(cv(r.c[3])).trim()).filter(Boolean));
 
   // KPIs
   const clients=new Set(), products=new Set();
   let totalQty=0;
   salesRows.forEach(r=>{
-    const c=fv(cv(r.c[1])),p=fv(cv(r.c[2])),q=fi(cv(r.c[3]));
+    const c=fv(cv(r.c[clientIdx])),p=fv(cv(r.c[prodIdx])),q=fi(cv(r.c[qtyIdx]));
     if(c) clients.add(c); if(p) products.add(p); totalQty+=q;
   });
   document.getElementById('so-k1').textContent=ind(salesRows.length);
@@ -1119,13 +1382,91 @@ async function loadSales(){
   document.getElementById('so-k3').textContent=products.size;
   document.getElementById('so-k4').textContent=fmtQ(totalQty);
 
-  // Table
-  const tbody=document.getElementById('so-body');
-  tbody.innerHTML=salesRows.map(r=>{
-    const d=fv(cv(r.c[0])),cl=fv(cv(r.c[1])),pr=fv(cv(r.c[2])),q=fv(cv(r.c[3])),so=fv(cv(r.c[4]));
-    return `<tr><td class="mono">${d}</td><td>${cl}</td><td>${pr}</td><td class="num">${q}</td><td class="mono">${so}</td></tr>`;
-  }).join('');
+  // Enrich each row with workflow stage
+  soAllRows=salesRows.map(r=>{
+    const date=fv(cv(r.c[dateIdx]));
+    const client=fv(cv(r.c[clientIdx]));
+    const product=fv(cv(r.c[prodIdx]));
+    const qty=fv(cv(r.c[qtyIdx]));
+    const soNo=fv(cv(r.c[soColIdx]));
+    const payTermRaw=ptIdx>=0?fv(cv(r.c[ptIdx])):'';
+    const payTerm=payTermRaw||'—';
+    const isAdvance=/(advance|adv|upfront|prepaid|100%)/i.test(payTermRaw);
+    const isDispatched=dispatchedSOs.has(soNo.trim());
+
+    // Determine stage
+    let stage, stageClass, actionHtml;
+    if(isDispatched){
+      stage='In Collection';
+      stageClass='stage stage-collection';
+      actionHtml='<button class="action-pill ap-collection">Follow up Payment</button>';
+    } else if(isAdvance){
+      stage='CRM: Call for Payment';
+      stageClass='stage stage-crm-call';
+      actionHtml='<button class="action-pill ap-crm">CRM: Call Customer</button>';
+    } else if(payTermRaw){
+      stage='Ready for Dispatch';
+      stageClass='stage stage-dispatch';
+      actionHtml='<button class="action-pill ap-dispatch">Schedule Dispatch</button>';
+    } else {
+      stage='New Order';
+      stageClass='stage stage-new';
+      actionHtml='<span style="color:var(--s400);font-size:10px">Awaiting terms</span>';
+    }
+    return {date,client,product,qty,soNo,payTerm,isAdvance,isDispatched,stage,stageClass,actionHtml,_stageKey:isDispatched?'collection':isAdvance?'crm':payTermRaw?'dispatch':'new'};
+  });
+
+  renderSalesWorkflow();
 }
+
+function renderSalesWorkflow(){
+  const q=(document.getElementById('so-q')||{value:''}).value.toLowerCase();
+  const stageFilter=(document.getElementById('so-stage-filter')||{value:'all'}).value;
+
+  // Workflow summary counts
+  const cnt={new:0,crm:0,dispatch:0,collection:0};
+  soAllRows.forEach(r=>{ if(cnt[r._stageKey]!==undefined) cnt[r._stageKey]++; });
+  document.getElementById('wf-cnt-new').textContent=ind(cnt.new);
+  document.getElementById('wf-cnt-crm').textContent=ind(cnt.crm);
+  document.getElementById('wf-cnt-disp').textContent=ind(cnt.dispatch);
+  document.getElementById('wf-cnt-coll').textContent=ind(cnt.collection);
+
+  // Filter
+  let rows=soAllRows;
+  if(stageFilter!=='all') rows=rows.filter(r=>r._stageKey===stageFilter);
+  if(q) rows=rows.filter(r=>(r.client+r.soNo+r.product+r.payTerm).toLowerCase().includes(q));
+
+  // Title
+  const titles={all:'All Sales Orders',new:'New Orders',crm:'CRM: Call for Payment',dispatch:'Ready for Dispatch',collection:'In Collection'};
+  document.getElementById('so-table-title').textContent=titles[stageFilter]||'All Sales Orders';
+
+  // Render
+  const tbody=document.getElementById('so-body');
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="8" class="empty-st">No orders in this stage</td></tr>';
+    return;
+  }
+  tbody.innerHTML=rows.map(r=>`
+    <tr>
+      <td class="mono" style="font-weight:700">${r.soNo}</td>
+      <td class="mono" style="color:var(--s400)">${r.date}</td>
+      <td style="font-weight:500">${r.client}</td>
+      <td style="color:var(--s600)">${r.product}</td>
+      <td style="text-align:right;font-weight:700">${r.qty}</td>
+      <td><span style="font-size:11px;font-weight:600;color:${r.isAdvance?'var(--a)':r.isDispatched?'var(--g)':'var(--b)'}">${r.payTerm}</span></td>
+      <td><span class="${r.stageClass}">${r.stage}</span></td>
+      <td>${r.actionHtml}</td>
+    </tr>`).join('');
+}
+
+function filterWorkflow(stage){
+  const sel=document.getElementById('so-stage-filter');
+  if(sel) sel.value=stage;
+  renderSalesWorkflow();
+  // Navigate to sales page
+  go('sales',null,'Sales Orders');
+}
+function filterSalesOrders(){ renderSalesWorkflow(); }
 
 // ── DISPATCH ─────────────────────────────────────
 async function loadDispatch(){
@@ -1160,6 +1501,8 @@ async function loadDispatch(){
   ).join('');
 
   // Item chart
+  // Trigger dashboard render and re-render sales workflow after dispatch data
+  setTimeout(()=>{renderDispatchDashboard();if(soAllRows.length) renderSalesWorkflow();}, 100);
   const itemRev={};
   dispRows.forEach(r=>{const it=fv(cv(r.c[5]));const v=fi(cv(r.c[11]));if(it) itemRev[it]=(itemRev[it]||0)+v;});
   const topItem=Object.entries(itemRev).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -1717,6 +2060,219 @@ function fmsSearch(){
     tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';
   });
 }
+
+
+// ════════════════════════════════════════════
+//  DISPATCH DASHBOARD
+// ════════════════════════════════════════════
+let ddSortCol=1, ddSortAsc=true, ddDoneSet=new Set();
+
+function renderDispatchDashboard(){
+  if(!dispRows.length) return;
+  const q=(document.getElementById('dd-search').value||'').toLowerCase();
+  const statusF=document.getElementById('dd-status-filter').value;
+
+  // Each dispatch row can be PENDING or DONE
+  // DONE = marked by user locally (stored in ddDoneSet by invoice no)
+  // PENDING = not in ddDoneSet
+  let rows=dispRows.map((r,i)=>{
+    const uid=fv(cv(r.c[4]))||('D-'+(String(i+1).padStart(6,'0')));
+    const date=fv(cv(r.c[0]));
+    const party=fv(cv(r.c[1]));
+    const po=fv(cv(r.c[2]));
+    const so=fv(cv(r.c[3]));
+    const inv=fv(cv(r.c[4]));
+    const qty=fv(cv(r.c[8]))||'0';
+    const isDone=ddDoneSet.has(inv||uid);
+    const missing=[];
+    if(!fi(cv(r.c[9]))) missing.push('Rate');
+    // Check if party name looks complete
+    const missingStr=missing.length?'Missing: '+missing.join(', '):'';
+    return {uid,date,party,po,so,inv,qty,isDone,missingStr,_orig:r,_idx:i};
+  });
+
+  // Filter by status
+  if(statusF==='PENDING') rows=rows.filter(r=>!r.isDone);
+  else if(statusF==='DONE') rows=rows.filter(r=>r.isDone);
+
+  // Filter by search
+  if(q) rows=rows.filter(r=>
+    (r.party+r.po+r.so+r.inv+r.uid+r.date).toLowerCase().includes(q)
+  );
+
+  // Sort
+  rows.sort((a,b)=>{
+    const vals=[a.uid,a.date,a.party,a.po,a.so,a.inv,a.qty];
+    const bvals=[b.uid,b.date,b.party,b.po,b.so,b.inv,b.qty];
+    const av=vals[ddSortCol]||'', bv=bvals[ddSortCol]||'';
+    return ddSortAsc?av.localeCompare(bv,'',{numeric:true}):bv.localeCompare(av,'',{numeric:true});
+  });
+
+  // Stats
+  const total=dispRows.length;
+  const pendingCount=dispRows.filter((_,i)=>{
+    const inv=fv(cv(dispRows[i].c[4]));
+    return !ddDoneSet.has(inv||('D-'+String(i+1).padStart(6,'0')));
+  }).length;
+  const doneCount=total-pendingCount;
+  document.getElementById('dd-stat-text').innerHTML=
+    `<strong>Total: ${ind(total)}</strong> &bull; <span class="pend">Pending: ${ind(pendingCount)}</span> &bull; <span class="done">Done: ${ind(doneCount)}</span> &bull; Sort: Date (${ddSortAsc?'ASC':'DESC'})`;
+
+  // Render
+  const tbody=document.getElementById('dd-tbody');
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="9" class="empty-st">No records match the filter</td></tr>';
+    return;
+  }
+  tbody.innerHTML=rows.map(r=>`
+    <tr id="dd-row-${r.inv}">
+      <td class="dd-id">${r.uid}</td>
+      <td class="dd-date">${r.date}</td>
+      <td style="font-weight:500">${r.party}</td>
+      <td class="mono">${r.po||'<span style="color:var(--s300)">N/A</span>'}</td>
+      <td class="mono">${r.so||'<span style="color:var(--s300)">N/A</span>'}</td>
+      <td class="mono">${r.inv}</td>
+      <td style="text-align:right;font-weight:600">${r.qty}</td>
+      <td>
+        ${r.isDone
+          ? '<span class="badge-done">DONE</span>'
+          : `<span class="badge-pend">PENDING</span>${r.missingStr?'<span class="badge-miss">'+r.missingStr+'</span>':''}`
+        }
+      </td>
+      <td>
+        ${r.isDone
+          ? `<button class="dd-done-btn done" onclick="ddToggle('${r.inv}')">Undo</button>`
+          : `<button class="dd-done-btn" onclick="ddToggle('${r.inv}')">Done</button>`
+        }
+      </td>
+    </tr>`).join('');
+}
+
+function ddToggle(inv){
+  if(ddDoneSet.has(inv)) ddDoneSet.delete(inv);
+  else ddDoneSet.add(inv);
+  renderDispatchDashboard();
+}
+
+function ddSort(col){
+  if(ddSortCol===col) ddSortAsc=!ddSortAsc;
+  else{ddSortCol=col;ddSortAsc=true;}
+  renderDispatchDashboard();
+}
+
+// ════════════════════════════════════════════
+//  PENDING ORDERS
+// ════════════════════════════════════════════
+let pendingRows=[], allPendingData=[];
+
+async function loadPendingOrders(){
+  // Try loading pending sales tab
+  const t=await fetchSheet('pending');
+  const loading=document.getElementById('pord-loading');
+  const wrap=document.getElementById('pord-table-wrap');
+
+  // Build comparison: sales orders vs dispatched invoices
+  // Cross-reference: if SO No. in sales appears in dispatch, mark as dispatched
+  const dispatchedSOs=new Set(dispRows.map(r=>fv(cv(r.c[3])).trim()).filter(Boolean));
+  const dispatchedInvoices=new Set(dispRows.map(r=>fv(cv(r.c[4])).trim()).filter(Boolean));
+
+  if(t&&t.rows&&t.rows.length){
+    // Use pending sales sheet data
+    const cols=(t.cols||[]).map(c=>c.label||'');
+    pendingRows=t.rows.filter(r=>r.c&&r.c.some(c=>c&&c.v));
+
+    // Try to detect key columns
+    const soIdx=cols.findIndex(h=>/(so|sales order|order no)/i.test(h));
+    const partyIdx=cols.findIndex(h=>/(party|customer|client|name)/i.test(h));
+    const prodIdx=cols.findIndex(h=>/(product|item|material)/i.test(h));
+    const qtyIdx=cols.findIndex(h=>/(qty|quantity)/i.test(h));
+    const statusIdx=cols.findIndex(h=>/(status|dispatch|done|complete)/i.test(h));
+
+    allPendingData=pendingRows.map(r=>{
+      const so=fv(cv(r.c[soIdx>=0?soIdx:4]));
+      const party=fv(cv(r.c[partyIdx>=0?partyIdx:1]));
+      const product=fv(cv(r.c[prodIdx>=0?prodIdx:2]));
+      const orderedQty=fi(cv(r.c[qtyIdx>=0?qtyIdx:3]));
+      const statusVal=statusIdx>=0?fv(cv(r.c[statusIdx])).toLowerCase():'';
+      // Check if dispatched
+      const isDispatched=dispatchedSOs.has(so)||dispatchedInvoices.has(so)||
+        statusVal.includes('done')||statusVal.includes('dispatch')||statusVal.includes('complete');
+      const dispQty=dispRows
+        .filter(dr=>fv(cv(dr.c[3])).trim()===so||fv(cv(dr.c[4])).trim()===so)
+        .reduce((s,dr)=>s+fi(cv(dr.c[8])),0);
+      const pendQty=Math.max(0,orderedQty-dispQty);
+      return {so,party,product,orderedQty,dispQty,pendQty,isDispatched,date:fv(cv(r.c[0]))};
+    });
+  } else {
+    // Fallback: use sales orders sheet, cross-reference with dispatch
+    allPendingData=salesRows.map(r=>{
+      const so=fv(cv(r.c[4]));
+      const party=fv(cv(r.c[1]));
+      const product=fv(cv(r.c[2]));
+      const orderedQty=fi(cv(r.c[3]));
+      const dispQty=dispRows
+        .filter(dr=>fv(cv(dr.c[3])).trim()===so.trim())
+        .reduce((s,dr)=>s+fi(cv(dr.c[8])),0);
+      const pendQty=Math.max(0,orderedQty-dispQty);
+      const isDispatched=dispatchedSOs.has(so.trim())||dispQty>=orderedQty;
+      return {so,party,product,orderedQty,dispQty,pendQty,isDispatched,date:fv(cv(r.c[0]))};
+    });
+  }
+
+  loading.style.display='none';
+  wrap.style.display='block';
+  renderPendingOrders();
+}
+
+function renderPendingOrders(){
+  const q=(document.getElementById('pord-q').value||'').toLowerCase();
+  const filter=document.getElementById('pord-filter').value;
+  let data=allPendingData;
+  if(filter==='PENDING') data=data.filter(r=>!r.isDispatched||r.pendQty>0);
+  else if(filter==='DONE') data=data.filter(r=>r.isDispatched&&r.pendQty<=0);
+  if(q) data=data.filter(r=>(r.party+r.so+r.product).toLowerCase().includes(q));
+
+  const total=allPendingData.length;
+  const pending=allPendingData.filter(r=>!r.isDispatched||r.pendQty>0).length;
+  const done=total-pending;
+  const pct=total?Math.round(done/total*100):0;
+
+  document.getElementById('pord-k1').textContent=ind(total);
+  document.getElementById('pord-k2').textContent=ind(pending);
+  document.getElementById('pord-k3').textContent=ind(done);
+  document.getElementById('pord-k4').textContent=pct+'%';
+
+  const tbody=document.getElementById('pord-tbody');
+  if(!data.length){
+    tbody.innerHTML='<tr><td colspan="9" class="empty-st">No records match</td></tr>';
+    return;
+  }
+  tbody.innerHTML=data.map(r=>{
+    const totalQ=r.orderedQty||1;
+    const dispPct=Math.min(100,Math.round(r.dispQty/totalQ*100));
+    const status=r.isDispatched&&r.pendQty<=0
+      ? '<span class="badge-done">DONE</span>'
+      : r.dispQty>0
+        ? '<span class="badge-pend" style="background:#dbeafe;color:#1d4ed8;border-color:#93c5fd">PARTIAL</span>'
+        : '<span class="badge-pend">PENDING</span>';
+    return `<tr>
+      <td class="mono">${r.so}</td>
+      <td class="mono" style="font-size:10px;color:var(--s400)">${r.date}</td>
+      <td style="font-weight:500">${r.party}</td>
+      <td>${r.product}</td>
+      <td style="text-align:right;font-weight:600">${ind(r.orderedQty)}</td>
+      <td style="text-align:right;color:var(--gd);font-weight:600">${r.dispQty?ind(r.dispQty):''}</td>
+      <td style="text-align:right;color:${r.pendQty>0?'var(--rm)':'var(--s400)'};font-weight:600">${r.pendQty>0?ind(r.pendQty):'0'}</td>
+      <td style="min-width:100px">
+        <div class="pord-track"><div class="pord-fill" style="width:${dispPct}%"></div></div>
+        <div style="font-size:9px;color:var(--s400);margin-top:2px">${dispPct}% dispatched</div>
+      </td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterPendingOrders(){ renderPendingOrders(); }
 
 </script>
 </body>
