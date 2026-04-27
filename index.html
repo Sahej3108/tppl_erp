@@ -868,24 +868,22 @@ tbody tr:hover td{background:var(--s50)}
 </div>
 
 <! ══════════ LEADS ══════════ >
-<div class="pg" id="pg-leads">
+<div class="screen" id="sc-leads">
   <div class="ph">
     <div><div class="pt">Leads</div><div class="ps">Live data from leads sheet</div></div>
     <div class="ha">
-      <input class="fi fi-lg" id="ld-q" type="text" placeholder="Search leads..." oninput="filterTbl('leads-tbody','ld-q')">
-      <button class="btn btno" onclick="exportTbl('leads-tbody',leadsHdr)">Export CSV</button>
+      <input class="fi" type="text" id="leads-search" placeholder="Search leads..." style="width:220px" oninput="filterTable('leads-tbody','leads-search')">
+      <button class="btn btno" onclick="exportTable('leads-tbody', leadsHeaders)">Export CSV</button>
     </div>
   </div>
-  <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
-    <div class="kpi g"><div class="kpi-label">Total Leads</div><div class="kpi-val" id="dm-leads">...</div></div>
-    <div class="kpi b"><div class="kpi-label">Columns</div><div class="kpi-val" id="ld-cols">...</div></div>
-    <div class="kpi a"><div class="kpi-label">Sheet</div><div class="kpi-val" style="font-size:14px">Leads DB</div></div>
-  </div>
   <div class="card">
-    <div class="ch"><div class="ct">All Leads</div><span class="pill pg2">Live</span></div>
-    <div id="leads-loading" class="ld"><div class="spin"></div>Loading leads data...</div>
+    <div class="ch"><div class="ct">All Leads</div><span class="pill pg">Live</span></div>
+    <div id="leads-loading" class="ld" style="padding:20px 16px"><div class="spin"></div>Loading leads data...</div>
     <div class="tw" id="leads-table-wrap" style="display:none">
-      <table><thead id="leads-thead"></thead><tbody id="leads-tbody"></tbody></table>
+      <table>
+        <thead id="leads-thead"></thead>
+        <tbody id="leads-tbody"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -914,19 +912,19 @@ tbody tr:hover td{background:var(--s50)}
 </div>
 
 <! ══════════ SCOT CRM (EMBEDDED) ══════════ >
-<div class="embed-pg" id="pg-scot">
-  <div class="embed-bar">
-    <div><div class="embed-label">Scot CRM</div><div class="embed-meta">takkarpolychem.com workspace</div></div>
-    <a class="btn btno" style="font-size:11px;text-decoration:none" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbxSnjv6aNtk3rS0IgPAXFRvEc-sQpNi4LrUQ4oMG5vHSp_fiGPWHnx8lJvjHFPo9RKy/exec" target="_blank">Open in New Tab</a>
-  </div>
-  <div class="embed-body">
-    <iframe id="iframe-scot" src="" data-src="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbxSnjv6aNtk3rS0IgPAXFRvEc-sQpNi4LrUQ4oMG5vHSp_fiGPWHnx8lJvjHFPo9RKy/exec"></iframe>
-    <div class="embed-cover" id="cover-scot">
-      <div class="ec-title">Scot CRM</div>
-      <div class="ec-sub">This tool is hosted on your Google Workspace. You need to be signed in to your takkarpolychem.com Google account for it to load here. If it does not load below, open in a new tab.</div>
-      <a class="ec-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbxSnjv6aNtk3rS0IgPAXFRvEc-sQpNi4LrUQ4oMG5vHSp_fiGPWHnx8lJvjHFPo9RKy/exec" target="_blank">Open Scot CRM</a>
-      <div class="ec-note">Or sign in to your Google Workspace account for it to load inline</div>
-      <button class="btn btno" style="margin-top:8px" onclick="tryLoad('scot')">Try Loading Inline</button>
+<div class="screen" id="sc-scot">
+  <div class="iframe-shell">
+    <div class="iframe-bar">
+      <div><div class="iframe-label">Scot CRM</div><div class="iframe-url">script.google.com/a/macros/takkarpolychem.com</div></div>
+      <div class="iframe-actions"><a class="open-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbxSnjv6aNtk3rS0IgPAXFRvEc-sQpNi4LrUQ4oMG5vHSp_fiGPWHnx8lJvjHFPo9RKy/exec" target="_blank">Open in new tab</a></div>
+    </div>
+    <div class="iframe-body">
+      <div class="iframe-overlay">
+        <div class="ov-title">Scot CRM</div>
+        <div class="ov-sub">This tool requires your Google Workspace login (takkarpolychem.com). Click below to open it in a new tab where you are already signed in.</div>
+        <a class="ov-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbxSnjv6aNtk3rS0IgPAXFRvEc-sQpNi4LrUQ4oMG5vHSp_fiGPWHnx8lJvjHFPo9RKy/exec" target="_blank">Open Scot CRM</a>
+        <div style="font-size:10px;color:var(--s400);margin-top:4px">Opens in new tab — your session stays here</div>
+      </div>
     </div>
   </div>
 </div>
@@ -975,29 +973,18 @@ tbody tr:hover td{background:var(--s50)}
 </div>
 
 <! ══════════ SALES FMS ══════════ >
-<div class="screen" id="sc-sales-fms" style="padding:0;height:calc(100vh - var(--topbar))">
+<div class="screen" id="sc-sales-fms">
   <div class="iframe-shell">
     <div class="iframe-bar">
-      <div>
-        <div class="iframe-label">Sales FMS</div>
-        <div class="iframe-url">script.google.com/a/macros/takkarpolychem.com</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="open-btn" onclick="tryLoadFMS()">Load Inline</button>
-        <a class="open-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank">Open in New Tab</a>
-      </div>
+      <div><div class="iframe-label">Sales FMS</div><div class="iframe-url">script.google.com/a/macros/takkarpolychem.com</div></div>
+      <div class="iframe-actions"><a class="open-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank">Open in new tab</a></div>
     </div>
-    <div class="iframe-body" id="fms-iframe-body">
-      <iframe id="iframe-fms" src="" style="width:100%;height:100%;border:none;display:block"></iframe>
-      <div class="iframe-overlay" id="fms-cover">
-        <div class="ov-icon">
-          <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="#1a6e3c" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-7"/></svg>
-        </div>
+    <div class="iframe-body">
+      <div class="iframe-overlay">
         <div class="ov-title">Sales FMS</div>
-        <div class="ov-sub">Field Management System for the Sales team. You need to be signed in to your Google Workspace account (takkarpolychem.com). Click <strong>Load Inline</strong> to try loading inside this portal, or open in a new tab.</div>
-        <button class="ov-btn" onclick="tryLoadFMS()">Load Inline</button>
-        <a class="ov-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank" style="text-decoration:none;margin-top:6px">Open in New Tab</a>
-        <div class="ov-note">If inline loading fails, use the new tab option</div>
+        <div class="ov-sub">This tool requires your Google Workspace login (takkarpolychem.com). Click below to open it in a new tab where you are signed in.</div>
+        <a class="ov-btn" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbwX7FzIovf_3Su8JZkorZARyB9O9Ak4FWvDYrWcfGWggza-NTINIeWADneziPZXI99P/exec" target="_blank">Open Sales FMS</a>
+        <div style="font-size:10px;color:var(--s400);margin-top:4px">Opens in new tab — your session stays here</div>
       </div>
     </div>
   </div>
@@ -1523,14 +1510,12 @@ async function loadLeads() {
   const hCols = leadsHeaders.filter(h => h).slice(0, 8);
   thead.innerHTML = '<tr>' + hCols.map(h => `<th>${h}</th>`).join('') + '</tr>';
   leadsRows = t.rows.filter(r => r.c && r.c.some(c => c && c.v));
-  if(document.getElementById('dm-leads')) document.getElementById('dm-leads').textContent = leadsRows.length;
   tbody.innerHTML = leadsRows.map(r =>
     '<tr>' + hCols.map((_,i) => `<td>${fv(cv(r.c[i]))}</td>`).join('') + '</tr>'
   ).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--s400)">No leads data</td></tr>';
   if(loading) loading.style.display = 'none';
   if(wrap)    wrap.style.display    = 'block';
-}
-// ── STOCK ─────────────────────────────────────────
+}// ── STOCK ─────────────────────────────────────────
 async function loadStock(){
   const t=await fetchSheet('stock');
   const loading=document.getElementById('st-loading');
