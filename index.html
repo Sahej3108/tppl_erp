@@ -1167,6 +1167,10 @@ const SHEETS = {
   leads:    { id:'1vvUYVy4BPok-tNL3p2ocy_sGRwfMnlKlMA9UKI2guNU',  tab:'Sheet1' },
   stock:    { id:'1XwprgbB6O9veKno9OGYKG-9YRK1_M_Hu-d4evm6vIZc',  tab:'Daily Report - All Data' },
 };
+let salesRows = [], dispRows = [], leadsHdr = [], stockHdr = [];
+let soAllRows = [], scotRows = [], scotHdr = [], scotFiltered = [], allPendingData = [], pendingRows = [];
+let leadsHeaders = [], stockHeaders = [];
+const cache = {};
 
 // ── FETCH SHEET ──────────────────────────────────────────────────
 // EXACT working version — allorigins proxy, simple and reliable
@@ -1357,7 +1361,7 @@ async function loadAll(){
 // ── SALES ────────────────────────────────────────
 // Sales order column headers (detected dynamically)
 let soHeaders=['Date','Client','Product','Qty','SO No'];
-let soAllRows=[]; // enriched rows for workflow
+soAllRows=[]; // enriched rows for workflow
 let soCurrentFilter='all';
 
 async function loadSales(){
@@ -1727,7 +1731,7 @@ function exportTbl(tbodyId,headers){
 // ══════════════════════════════════════════════════
 //  SCOT CRM / SALES FMS
 // ══════════════════════════════════════════════════
-let scotRows=[], scotHdr=[], scotFiltered=[];
+scotRows=[]; scotHdr=[]; scotFiltered=[];
 const FUNNEL_STEPS = [
   {key:'total',    label:'Total Leads',              cls:'total'},
   {key:'step1',    label:'Step 1: Mail Send',         cls:''},
@@ -2190,7 +2194,7 @@ function ddSort(col){
 // ════════════════════════════════════════════
 //  PENDING ORDERS
 // ════════════════════════════════════════════
-let pendingRows=[], allPendingData=[];
+pendingRows=[]; allPendingData=[];
 
 async function loadPendingOrders(){
   // Try loading pending sales tab
