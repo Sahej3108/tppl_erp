@@ -665,6 +665,8 @@ tbody tr:hover td{background:var(--s50)}
     <div><div class="pt">Sales Orders</div><div class="ps">Live data from order sheet</div></div>
     <div class="ha">
       <input class="fi fi-lg" id="so-q" type="text" placeholder="Search client, product, SO..." oninput="filterTbl('so-body','so-q')">
+      <a class="btn btng" href="https://script.google.com/a/macros/takkarpolychem.com/s/AKfycbz68KduSf7lvv0Vxnf4_Z00RqSUYkhNuRDV9ZeYazzoBcbELdjK2Thv5dGUV1tSuj7H/exec" target="_blank" style="text-decoration:none;font-size:11px">Open Sales Order Tool</a>
+      <a class="btn btno" href="https://script.google.com/macros/s/AKfycbxsMMWyzOWySD3fzYQq7oVUpperd4Jsq_PCZrPLFYNg6Ic4JouB4veUxjW7Ttsur279/exec" target="_blank" style="text-decoration:none;font-size:11px">Open Pending Orders Tool</a>
       <button class="btn btno" onclick="exportTbl('so-body',['Date','Client','Product','Qty','SO No'])">Export CSV</button>
     </div>
   </div>
@@ -792,6 +794,7 @@ tbody tr:hover td{background:var(--s50)}
     <div><div class="pt">Dispatch Data</div><div class="ps">Live data from Dispatch sheet</div></div>
     <div class="ha">
       <input class="fi fi-lg" id="dp-q" type="text" placeholder="Search party, invoice, item..." oninput="filterTbl('dp-body','dp-q')">
+      <a class="btn btng" href="https://script.google.com/macros/s/AKfycbzxCc7QDCkhxcLCJkf6ISQgKeZmkv4AzB7HO3Nu0V-EmJMRg1gsyIATIV3Hpl9jqfo4fg/exec" target="_blank" style="text-decoration:none;font-size:11px">Open Dispatch Dashboard</a>
       <button class="btn btno" onclick="exportTbl('dp-body',['Date','Party','PO No','SO No','Invoice','Item','Description','Batch','Qty','Rate','Amount','Total'])">Export CSV</button>
     </div>
   </div>
@@ -828,7 +831,10 @@ tbody tr:hover td{background:var(--s50)}
         <div class="dd-title">DISPATCH DASHBOARD</div>
         <div class="dd-meta">Double-click column header to sort &bull; Live from Dispatch sheet</div>
       </div>
-      <button class="dd-refresh" onclick="renderDispatchDashboard()">Refresh</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a class="open-btn" href="https://script.google.com/macros/s/AKfycbzxCc7QDCkhxcLCJkf6ISQgKeZmkv4AzB7HO3Nu0V-EmJMRg1gsyIATIV3Hpl9jqfo4fg/exec" target="_blank" style="font-size:11px">Open Original Tool</a>
+        <button class="dd-refresh" onclick="renderDispatchDashboard()">Refresh</button>
+      </div>
     </div>
     <div class="dd-controls">
       <input class="fi" id="dd-search" type="text" placeholder="Search Party / PO / Invoice / ID..." style="width:220px" oninput="renderDispatchDashboard()">
